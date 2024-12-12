@@ -10,6 +10,12 @@
 <body>
     <header>
         <h1>Morgan Wiebelhaus</h1>
+        <nav>
+            <ul>
+                <li><a href="password.html">Login</a></li>
+                
+            </ul>
+        </nav>
     </header>
     <main>
         <img src="" alt="" class="profile-pic">
@@ -37,24 +43,28 @@
         })();
 
         function saveMessage(name, email, message) {
-        let messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
-        
-        const messageEntry = {
-            name: name,
-            email: email,
-            message: message,
-            timestamp: new Date().toISOString()
-        };
-        
-        messages.push(messageEntry);
-        localStorage.setItem('contactMessages', JSON.stringify(messages));
-        }
+            const contactName = document.getElementById('name').value;
+            const contactEmail = document.getElementById('email').value;
+            const contactMessage = document.getElementById('message').value;
 
-        saveMessage(name, email, message);
+         let messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
+        
+         const messageEntry = {
+                name: contactName,
+                email: contactEmail,
+                message: contactMessage,
+                timestamp: new Date().toISOString()
+         };
+        
+         messages.push(messageEntry);
+         localStorage.setItem('contactMessages', JSON.stringify(messages));
+        }
 
         const form = document.getElementById('contact-form');
         form.addEventListener('submit', function(event) {
             event.preventDefault();
+
+            saveMessage(event);
 
             emailjs.sendForm('service_xkcd10k', 'template_y1mmhg4', this)
                 .then(function() {
