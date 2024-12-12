@@ -30,8 +30,8 @@
         </form>
     </main>
     <script>
-        (function() {
-            emailjs.init("DElJOn2kAFkAs5WNr");
+    (function() {
+            emailjs.init("Y5Sh92XttwcOCKu9z");
         })();
 
         function saveMessage(name, email, message) {
@@ -51,14 +51,11 @@
          messages.push(messageEntry);
          localStorage.setItem('contactMessages', JSON.stringify(messages));
         }
-
         const form = document.getElementById('contact-form');
         form.addEventListener('submit', function(event) {
             event.preventDefault();
-
             saveMessage(event);
-
-            emailjs.sendForm('service_xkcd10k', 'template_y1mmhg4', this)
+            emailjs.sendForm('service_cv3e5t8', 'template_zetcdb8', this)
                 .then(function() {
                     alert('Message sent successfully!');
                     form.reset();
