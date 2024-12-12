@@ -30,14 +30,42 @@
         </form>
     </main>
     <script>
-        const form = document.getElementById('contact-form');
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
+        (function() {
+            emailjs.init("DElJOn2kAFkAs5WNr");
+        })();
 
-            alert("Message sent!");
+        function saveMessage(name, email, message) {
+            const contactName = document.getElementById('name').value;
+            const contactEmail = document.getElementById('email').value;
+            const contactMessage = document.getElementById('message').value;
+
+         let messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
+        
+         const messageEntry = {
+                name: contactName,
+                email: contactEmail,
+                message: contactMessage,
+                timestamp: new Date().toISOString()
+         };
+        
+         messages.push(messageEntry);
+         localStorage.setItem('contactMessages', JSON.stringify(messages));
+        }
+
+        const form = document.getElementById('contact-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            saveMessage(event);
+
+            emailjs.sendForm('service_xkcd10k', 'template_y1mmhg4', this)
+                .then(function() {
+                    alert('Message sent successfully!');
+                    form.reset();
+                }, function(error) {
+                    console.log('Failed...', error);
+                    alert('Failed to send message. Please try again.');
+                });
         });
     </script>
 </body>
