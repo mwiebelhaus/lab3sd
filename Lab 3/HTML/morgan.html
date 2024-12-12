@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <link rel="stylesheet" href="styles.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
 <body>
     <header>
@@ -31,13 +32,38 @@
         </form>
     </main>
     <script>
+        (function() {
+            emailjs.init("DElJOn2kAFkAs5WNr");
+        })();
+
+        function saveMessage(name, email, message) {
+        let messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
+        
+        const messageEntry = {
+            name: name,
+            email: email,
+            message: message,
+            timestamp: new Date().toISOString()
+        };
+        
+        messages.push(messageEntry);
+        localStorage.setItem('contactMessages', JSON.stringify(messages));
+        }
+
+        saveMessage(name, email, message);
+
         const form = document.getElementById('contact-form');
-        form.addEventListener('submit', (event) => {
+        form.addEventListener('submit', function(event) {
             event.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-            alert("Message sent!");
+
+            emailjs.sendForm('service_xkcd10k', 'template_y1mmhg4', this)
+                .then(function() {
+                    alert('Message sent successfully!');
+                    form.reset();
+                }, function(error) {
+                    console.log('Failed...', error);
+                    alert('Failed to send message. Please try again.');
+                });
         });
     </script>
 </body>
