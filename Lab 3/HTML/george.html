@@ -3,68 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   
+    <meta name="description" content="Personal website for George Venzke, a Software Engineering student at the University of Iowa.">
+    <title>George Venzke</title>
     <link rel="stylesheet" href="styles.css">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
 <body>
     <header>
         <h1>George Venzke</h1>
     </header>
     <main>
-        <img src="" alt="" class="profile-pic">
+        <img src="files/georgePFP.jpg" alt="George Venzke's profile picture" class="profile-pic">
         <h2>About Me</h2>
-        <p>Hello! I'm George</p>
+        <p>Hello! I'm George Venzke. I am a student at the University of Iowa studying Software Engineering. In my free time, I do coding projects on my own. I also like to spend my time reading and watching sports.</p>
         <h2>Contact Me</h2>
         <form id="contact-form">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
-            
-            <label for="email">Email:</label>
+            <label for="name">Name: <span class="sr-only">(Required)</span></label>
+            <input type="text" id="name" name="name" required pattern="[A-Za-z\s]+" title="Name must only contain letters and spaces.">
+
+            <label for="email">Email: <span class="sr-only">(Required)</span></label>
             <input type="email" id="email" name="email" required>
-            
-            <label for="message">Message:</label>
-            <textarea id="message" name="message" required></textarea>
-            
+
+            <label for="message">Message: <span class="sr-only">(Required)</span></label>
+            <textarea id="message" name="message" required minlength="10" maxlength="500"></textarea>
+
             <button type="submit">Send</button>
         </form>
     </main>
     <script>
-        (function() {
+        (function () {
             emailjs.init("aRtOkwuzR4JLdLPWb");
         })();
 
-        function saveMessage(name, email, message) {
-            const contactName = document.getElementById('name').value;
-            const contactEmail = document.getElementById('email').value;
-            const contactMessage = document.getElementById('message').value;
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
 
-         let messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
-        
-         const messageEntry = {
-                name: contactName,
-                email: contactEmail,
-                message: contactMessage,
+        function saveMessage({ name, email, message }) {
+            let messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
+            
+            const messageEntry = {
+                name,
+                email,
+                message,
                 timestamp: new Date().toISOString()
-         };
-        
-         messages.push(messageEntry);
-         localStorage.setItem('contactMessages', JSON.stringify(messages));
+            };
+
+            messages.push(messageEntry);
+            localStorage.setItem('contactMessages', JSON.stringify(messages));
         }
 
         const form = document.getElementById('contact-form');
-        form.addEventListener('submit', function(event) {
+        form.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            saveMessage(event);
+            const formData = new FormData(this);
+            const name = sanitizeInput(formData.get('name'));
+            const email = sanitizeInput(formData.get('email'));
+            const message = sanitizeInput(formData.get('message'));
 
+            saveMessage({ name, email, message });
+
+            form.querySelector('button').textContent = 'Submitting...';
             emailjs.sendForm('service_a7qa1df', 'template_gc5lwek', this)
-                .then(function() {
+                .then(function () {
                     alert('Message sent successfully!');
                     form.reset();
-                }, function(error) {
+                    form.querySelector('button').textContent = 'Send';
+                })
+                .catch(function (error) {
                     console.log('Failed...', error);
                     alert('Failed to send message. Please try again.');
+                    form.querySelector('button').textContent = 'Send';
                 });
         });
     </script>
